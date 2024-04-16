@@ -31,9 +31,11 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_core: any
   firebase_auth: any
+  firebase_database: any
   flutter:
     sdk: flutter
   get: any
+  chat_bubbles: any
 
 dev_dependencies:
 

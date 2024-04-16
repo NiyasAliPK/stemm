@@ -1,23 +1,26 @@
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_chat/app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController {
-  GlobalKey formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   loginWithEmailAndPassword() async {
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
     try {
       final auth = FirebaseAuth.instance;
-      final response = await auth.createUserWithEmailAndPassword(
+      final response = await auth.signInWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
-      log("message>>>${response.toString()}");
+      Loghelper.responseLogger(screen: "Login", response: response.toString());
     } catch (e) {
-      Loghelper.showToast(message: 'Failed to login, Please try again');
+      Loghelper.showToast(
+          message:
+              'Failed to login, Please check your credentials and try again');
     }
   }
 }
