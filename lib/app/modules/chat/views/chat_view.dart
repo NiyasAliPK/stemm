@@ -6,6 +6,7 @@ import 'package:firebase_chat/app/utils/models.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../controllers/chat_controller.dart';
 
@@ -27,14 +28,14 @@ class ChatView extends StatefulWidget {
 }
 
 class _ChatViewState extends State<ChatView> {
-  StreamSubscription? chatStream;
+  StreamSubscription? chatSubscription;
 
   @override
   void initState() {
     _controller.messages.clear();
     _controller.firebaseHelper
         .getChatsForRoom(selectedUser: widget.selectedUser!);
-    chatStream =
+    chatSubscription =
         _controller.firebaseHelper.watchTimeDbUpdates.stream.listen((event) {
       if (event.snapshot.value is Map) {
         final map = event.snapshot.value as Map;
@@ -48,7 +49,7 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   void dispose() {
-    chatStream?.cancel();
+    chatSubscription?.cancel();
     // _controller.firebaseHelper.watchTimeDbUpdates.s;
     super.dispose();
   }
@@ -57,6 +58,7 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -70,6 +72,7 @@ class _ChatViewState extends State<ChatView> {
               child: Obx(() => Column(children: [
                     Expanded(
                       child: ListView.separated(
+                        controller: _controller.scrollController,
                         itemCount: _controller.messages.length,
                         separatorBuilder: (BuildContext context, int index) {
                           return SizedBox(height: context.height * 0.01);
@@ -77,33 +80,46 @@ class _ChatViewState extends State<ChatView> {
                         itemBuilder: (BuildContext context, int index) {
                           return _controller.messages[index].message!
                                   .contains('https://')
-                              ? GestureDetector(
-                                  onTap: () {
-                                    if (_controller.messages[index].uid ==
-                                        FirebaseAuth
-                                            .instance.currentUser!.uid) {
-                                      _controller.openFileFromPath(
-                                          path: _controller
-                                              .messages[index].path!);
-                                    } else {
-                                      _controller.downloadFile(
-                                          _controller.messages[index].message!);
-                                    }
-                                  },
+                              ? AutoScrollTag(
+                                  key: ValueKey(index),
+                                  controller: _controller.scrollController,
+                                  index: index,
+                                  child: GestureDetector(
+                                      onTap: () {
+                                        if (_controller.messages[index].uid ==
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid) {
+                                          _controller.openFileFromPath(
+                                              path: _controller
+                                                  .messages[index].path!);
+                                        } else {
+                                          _controller.downloadFile(_controller
+                                              .messages[index].message!);
+                                        }
+                                      },
+                                      child: BubbleSpecialOne(
+                                        text: 'File',
+                                        color: Colors.grey,
+                                        isSender:
+                                            _controller.messages[index].uid ==
+                                                FirebaseAuth
+                                                    .instance.currentUser!.uid,
+                                      )),
+                                )
+                              : AutoScrollTag(
+                                  key: ValueKey(index),
+                                  controller: _controller.scrollController,
+                                  index: index,
                                   child: BubbleSpecialOne(
-                                    text: 'File',
-                                    color: Colors.grey,
+                                    text: _controller.messages[index].message!,
+                                    color: _controller.messages[index].uid ==
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid
+                                        ? Colors.blue
+                                        : Colors.green,
                                     isSender: _controller.messages[index].uid ==
                                         FirebaseAuth.instance.currentUser!.uid,
-                                  ))
-                              : BubbleSpecialOne(
-                                  text: _controller.messages[index].message!,
-                                  color: _controller.messages[index].uid ==
-                                          FirebaseAuth.instance.currentUser!.uid
-                                      ? Colors.blue
-                                      : Colors.green,
-                                  isSender: _controller.messages[index].uid ==
-                                      FirebaseAuth.instance.currentUser!.uid,
+                                  ),
                                 );
                         },
                       ),
@@ -120,19 +136,29 @@ class _ChatViewState extends State<ChatView> {
             ),
             SizedBox(
                 width: context.width * 0.82,
-                child: TextField(
-                  controller: _controller.messageController.value,
+                child: TextFormField(
+                  controller: _controller.messageController,
+                  onChanged: (value) {
+                    if (isKeyboardVisible) {
+                      _controller.scrollController.scrollToIndex(
+                          _controller.messages.length,
+                          duration: const Duration(milliseconds: 300));
+                    }
+                    _controller.update();
+                  },
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10)))),
                 )),
-            Obx(() => IconButton(
-                onPressed: () {
-                  _controller.sendMessage(selectedUser: widget.selectedUser!);
-                },
-                icon: _controller.messageController.value.text.isEmpty
-                    ? const Icon(Icons.attach_file)
-                    : const Icon(Icons.send))),
+            GetBuilder<ChatController>(
+              builder: (controller) => IconButton(
+                  onPressed: () {
+                    _controller.sendMessage(selectedUser: widget.selectedUser!);
+                  },
+                  icon: _controller.messageController.text.isEmpty
+                      ? const Icon(Icons.attach_file)
+                      : const Icon(Icons.send)),
+            ),
           ],
         ),
       ),

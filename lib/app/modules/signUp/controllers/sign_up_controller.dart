@@ -37,7 +37,7 @@ class SignUpController extends GetxController {
         Get.offAll(() => LoginView());
       }
     } catch (e) {
-      Loghelper.showToast(message: 'Failed to Sign Up, Please try again');
+      Loghelper.showToast(message: 'Failed to Register, Please try again');
     }
   }
 }

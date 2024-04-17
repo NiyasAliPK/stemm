@@ -34,11 +34,10 @@ class FirebaseHelper {
       required String uid,
       required String name,
       required String age}) async {
-    getDataBase.refFromURL(members).push().set({
-      "email": email,
-      "uid": uid,
-      "name": name,
-    });
+    getDataBase
+        .refFromURL(members)
+        .push()
+        .set({"email": email, "uid": uid, "name": name, "age": age});
   }
 
   static Future<DatabaseEvent> fetchAllUser() async {

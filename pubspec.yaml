@@ -41,6 +41,7 @@ dependencies:
   open_file: any
   path_provider: any
   dio: any
+  scroll_to_index: any
 
 dev_dependencies:
 

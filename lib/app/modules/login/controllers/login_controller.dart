@@ -23,4 +23,11 @@ class LoginController extends GetxController {
               'Failed to login, Please check your credentials and try again');
     }
   }
+
+  @override
+  void dispose() {
+    emailController.clear();
+    passwordController.clear();
+    super.dispose();
+  }
 }

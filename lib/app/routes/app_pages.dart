@@ -6,6 +6,8 @@ import 'package:firebase_chat/app/modules/home/bindings/home_binding.dart';
 import 'package:firebase_chat/app/modules/home/views/home_view.dart';
 import 'package:firebase_chat/app/modules/signUp/bindings/sign_up_binding.dart';
 import 'package:firebase_chat/app/modules/signUp/views/sign_up_view.dart';
+import 'package:firebase_chat/app/modules/userDetails/bindings/user_details_binding.dart';
+import 'package:firebase_chat/app/modules/userDetails/views/user_details_view.dart';
 
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
@@ -35,8 +37,13 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.CHAT,
-      page: () => ChatView(),
+      page: () => const ChatView(),
       binding: ChatBinding(),
+    ),
+    GetPage(
+      name: _Paths.USER_DETAILS,
+      page: () => UserDetailsView(),
+      binding: UserDetailsBinding(),
     ),
   ];
 }

@@ -14,7 +14,7 @@ class SignUpView extends GetView<SignUpController> {
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: const Text('Register'),
         centerTitle: true,
         automaticallyImplyLeading: true,
       ),
@@ -83,7 +83,7 @@ class SignUpView extends GetView<SignUpController> {
                     onPressed: () {
                       _controller.signUpWithEmailAndPassword();
                     },
-                    child: const Text("Sign Up")),
+                    child: const Text("Register")),
               ],
             ),
           ),
