@@ -12,7 +12,7 @@ class SignUpView extends GetView<SignUpController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Sign Up'),
         centerTitle: true,
@@ -23,9 +23,35 @@ class SignUpView extends GetView<SignUpController> {
           padding: const EdgeInsets.all(16),
           child: Form(
             key: _controller.formKey,
-            child: Column(
+            child: ListView(
               children: [
-                SizedBox(height: context.height * 0.1),
+                SizedBox(height: context.height * 0.075),
+                TextFormField(
+                  controller: _controller.nameController,
+                  decoration: const InputDecoration(hintText: "Name"),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your name';
+                    } else if (value.length < 3) {
+                      return 'Name should have more than 2 letters';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: context.height * 0.075),
+                TextFormField(
+                  controller: _controller.ageController,
+                  decoration: const InputDecoration(hintText: "Age"),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your age';
+                    } else if (value.length > 3) {
+                      return 'Please enter a valid age';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: context.height * 0.075),
                 TextFormField(
                   controller: _controller.emailController,
                   decoration: const InputDecoration(hintText: "Email"),
@@ -38,7 +64,7 @@ class SignUpView extends GetView<SignUpController> {
                     return null;
                   },
                 ),
-                SizedBox(height: context.height * 0.1),
+                SizedBox(height: context.height * 0.075),
                 TextFormField(
                   controller: _controller.passwordController,
                   decoration: const InputDecoration(hintText: "Password"),
@@ -52,7 +78,7 @@ class SignUpView extends GetView<SignUpController> {
                   },
                   obscureText: true,
                 ),
-                SizedBox(height: context.height * 0.1),
+                SizedBox(height: context.height * 0.075),
                 ElevatedButton(
                     onPressed: () {
                       _controller.signUpWithEmailAndPassword();

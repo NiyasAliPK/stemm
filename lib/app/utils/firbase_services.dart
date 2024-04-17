@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_chat/app/utils/models.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class FirebaseHelper {
   static const String baseRtdbUrl =
@@ -26,8 +29,16 @@ class FirebaseHelper {
         app: firebaseApp, databaseURL: baseRtdbUrl);
   }
 
-  static addUser({required String email, required String uid}) async {
-    getDataBase.refFromURL(members).push().set({"email": email, "uid": uid});
+  static addUser(
+      {required String email,
+      required String uid,
+      required String name,
+      required String age}) async {
+    getDataBase.refFromURL(members).push().set({
+      "email": email,
+      "uid": uid,
+      "name": name,
+    });
   }
 
   static Future<DatabaseEvent> fetchAllUser() async {
@@ -41,29 +52,37 @@ class FirebaseHelper {
   }
 
   static sendChat(
-      {required UserResponse selectedUser, required String message}) {
-    return chatRoomRef(selectedUser: selectedUser)
+      {required UserResponse selectedUser,
+      required String message,
+      String path = ''}) async {
+    return await chatRoomRef(selectedUser: selectedUser)
         .child(DateTime.now().millisecondsSinceEpoch.toString())
         .set({
       'uid': FirebaseAuth.instance.currentUser?.uid,
       'message': message,
+      'path': path
     });
   }
 
   getChatsForRoom({required UserResponse selectedUser}) {
     chatRoomRef(selectedUser: selectedUser).ref.onChildAdded.listen((event) {
-      // if (_streamController.isClosed) {
-      //   _streamController = StreamController.broadcast();
-      // }
       _streamController.add(event);
     });
-    // chatStream = databaseStream?.listen((event) {
-    //   _streamController.add(event);
-    // });
   }
 
   static String getRoomId({required List<String> uids}) {
     uids.sort((a, b) => a.compareTo(b));
     return uids.join();
+  }
+
+  Future<String> uploadFiles({required FilePickerResult pickedFile}) async {
+    final path = 'Files/${pickedFile.files.first.name}';
+    final file = File(pickedFile.files.first.path!);
+    final ref = FirebaseStorage.instance.ref().child(path);
+
+    final uploadTask = ref.putFile(file);
+    final snapshot = await uploadTask.whenComplete(() {});
+    final url = await snapshot.ref.getDownloadURL();
+    return url;
   }
 }

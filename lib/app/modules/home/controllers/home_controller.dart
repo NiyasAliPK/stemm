@@ -26,7 +26,10 @@ class HomeController extends GetxController {
           users.clear();
           for (var element in (response.snapshot.value! as Map).entries) {
             users.add(UserResponse(
-                email: element.value['email'], uid: element.value['uid']));
+                email: element.value['email'],
+                uid: element.value['uid'],
+                age: element.value['age'],
+                name: element.value['name']));
           }
         }
         users.removeWhere(

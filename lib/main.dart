@@ -7,13 +7,16 @@ import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
       options: const FirebaseOptions(
           apiKey: 'AIzaSyBnj1K-cIBt_2ExCXr-jNcizdJvELxuC9E',
           appId: '1:185708009305:android:2303f347e3c09011389e48',
           messagingSenderId: '185708009305',
-          projectId:
-              'stemmchat')); // FACED SOME ISSUES WITH INIALIZATION HENCE USED MANUAL ASSIGNMENT
+          projectId: 'stemmchat',
+          databaseURL: 'https://stemmchat-default-rtdb.firebaseio.com',
+          storageBucket: 'stemmchat.appspot.com'));
+  // FACED SOME ISSUES WITH INIALIZATION HENCE USED MANUAL ASSIGNMENT
   runApp(const MyApp());
 }
 

@@ -36,6 +36,11 @@ dependencies:
     sdk: flutter
   get: any
   chat_bubbles: any
+  file_picker: any
+  firebase_storage: any
+  open_file: any
+  path_provider: any
+  dio: any
 
 dev_dependencies:
 

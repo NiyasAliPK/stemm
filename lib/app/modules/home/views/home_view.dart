@@ -41,13 +41,14 @@ class HomeView extends GetView<HomeController> {
                                 elevation: 0.75,
                                 child: ListTile(
                                   onTap: () {
-                                    // FirebaseHelper.setupChatRoom(
-                                    //     selectedUser: snapshot.data![index]);
                                     Get.to(() => ChatView(
                                           selectedUser: snapshot.data![index],
                                         ));
                                   },
-                                  title: Text(snapshot.data![index].email!),
+                                  title: Text(snapshot.data![index].name!),
+                                  trailing: IconButton(
+                                      onPressed: () {},
+                                      icon: const Icon(Icons.info_outline)),
                                 ),
                               ),
                           separatorBuilder: (context, index) => SizedBox(
