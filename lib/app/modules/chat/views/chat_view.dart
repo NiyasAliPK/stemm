@@ -62,70 +62,74 @@ class _ChatViewState extends State<ChatView> {
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text('ChatView'),
+        title: Text(widget.selectedUser!.name!),
         centerTitle: true,
         automaticallyImplyLeading: true,
       ),
       body: SafeArea(
           child: Padding(
               padding: const EdgeInsets.all(16),
-              child: Obx(() => Column(children: [
-                    Expanded(
-                      child: ListView.separated(
-                        controller: _controller.scrollController,
-                        itemCount: _controller.messages.length,
-                        separatorBuilder: (BuildContext context, int index) {
-                          return SizedBox(height: context.height * 0.01);
-                        },
-                        itemBuilder: (BuildContext context, int index) {
-                          return _controller.messages[index].message!
-                                  .contains('https://')
-                              ? AutoScrollTag(
-                                  key: ValueKey(index),
-                                  controller: _controller.scrollController,
-                                  index: index,
-                                  child: GestureDetector(
-                                      onTap: () {
-                                        if (_controller.messages[index].uid ==
-                                            FirebaseAuth
-                                                .instance.currentUser!.uid) {
-                                          _controller.openFileFromPath(
-                                              path: _controller
-                                                  .messages[index].path!);
-                                        } else {
-                                          _controller.downloadFile(_controller
-                                              .messages[index].message!);
-                                        }
-                                      },
-                                      child: BubbleSpecialOne(
-                                        text: 'File',
-                                        color: Colors.grey,
-                                        isSender:
-                                            _controller.messages[index].uid ==
-                                                FirebaseAuth
-                                                    .instance.currentUser!.uid,
-                                      )),
-                                )
-                              : AutoScrollTag(
-                                  key: ValueKey(index),
-                                  controller: _controller.scrollController,
-                                  index: index,
-                                  child: BubbleSpecialOne(
-                                    text: _controller.messages[index].message!,
-                                    color: _controller.messages[index].uid ==
-                                            FirebaseAuth
-                                                .instance.currentUser!.uid
-                                        ? Colors.blue
-                                        : Colors.green,
-                                    isSender: _controller.messages[index].uid ==
-                                        FirebaseAuth.instance.currentUser!.uid,
-                                  ),
-                                );
-                        },
-                      ),
+              child: Obx(() {
+                _controller.scrollController.scrollToIndex(
+                    _controller.messages.length,
+                    duration: const Duration(milliseconds: 300));
+                return Column(children: [
+                  Expanded(
+                    child: ListView.separated(
+                      controller: _controller.scrollController,
+                      itemCount: _controller.messages.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return SizedBox(height: context.height * 0.01);
+                      },
+                      itemBuilder: (BuildContext context, int index) {
+                        return _controller.messages[index].message!
+                                .contains('https://')
+                            ? AutoScrollTag(
+                                key: ValueKey(index),
+                                controller: _controller.scrollController,
+                                index: index,
+                                child: GestureDetector(
+                                    onTap: () {
+                                      if (_controller.messages[index].uid ==
+                                          FirebaseAuth
+                                              .instance.currentUser!.uid) {
+                                        _controller.openFileFromPath(
+                                            path: _controller
+                                                .messages[index].path!);
+                                      } else {
+                                        _controller.downloadFile(_controller
+                                            .messages[index].message!);
+                                      }
+                                    },
+                                    child: BubbleSpecialOne(
+                                      text: 'File',
+                                      color: Colors.grey,
+                                      isSender:
+                                          _controller.messages[index].uid ==
+                                              FirebaseAuth
+                                                  .instance.currentUser!.uid,
+                                    )),
+                              )
+                            : AutoScrollTag(
+                                key: ValueKey(index),
+                                controller: _controller.scrollController,
+                                index: index,
+                                child: BubbleSpecialOne(
+                                  text: _controller.messages[index].message!,
+                                  color: _controller.messages[index].uid ==
+                                          FirebaseAuth.instance.currentUser!.uid
+                                      ? Colors.blue
+                                      : Colors.green,
+                                  isSender: _controller.messages[index].uid ==
+                                      FirebaseAuth.instance.currentUser!.uid,
+                                ),
+                              );
+                      },
                     ),
-                    SizedBox(height: context.height * 0.1)
-                  ])))),
+                  ),
+                  SizedBox(height: context.height * 0.1)
+                ]);
+              }))),
       floatingActionButton: Container(
         color: Colors.white,
         child: Row(

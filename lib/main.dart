@@ -16,7 +16,7 @@ void main() async {
           projectId: 'stemmchat',
           databaseURL: 'https://stemmchat-default-rtdb.firebaseio.com',
           storageBucket: 'stemmchat.appspot.com'));
-  // FACED SOME ISSUES WITH INIALIZATION HENCE USED MANUAL ASSIGNMENT
+  // FACED SOME ISSUES WITH FIREBASE CLI HENCE USED MANUAL ASSIGNMENT
   runApp(const MyApp());
 }
 
